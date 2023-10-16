@@ -1,14 +1,13 @@
 package com.dembasiby.userservice.models;
 
 import jakarta.persistence.Entity;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.ManyToMany;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
 
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -16,9 +15,7 @@ import java.util.List;
 @NoArgsConstructor
 public class User extends BaseModel {
     private String email;
-    private String encPassword;
-
-    @OneToMany(mappedBy = "user")
-    @Fetch(FetchMode.SUBSELECT)
-    private List<Session> sessions;
+    private String password;
+    @ManyToMany
+    private Set<Role> roles = new HashSet<>();
 }
