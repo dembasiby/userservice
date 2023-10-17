@@ -1,13 +1,15 @@
 package com.dembasiby.userservice.controllers;
 
+import com.dembasiby.userservice.dtos.SetUserRolesRequestDTO;
 import com.dembasiby.userservice.dtos.UserDTO;
 import com.dembasiby.userservice.services.UserService;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 
 @RestController
+@RequestMapping("/users")
 public class UserController {
     private final UserService userService;
 
@@ -15,18 +17,20 @@ public class UserController {
         this.userService = userService;
     }
 
-    @PostMapping("/users")
-    public UserDTO signup(@RequestBody UserDTO userDTO) {
-        return userService.signup(userDTO);
+    @GetMapping("{id}")
+    public ResponseEntity<UserDTO> getUserDetails(@PathVariable("id") Long userid) {
+        UserDTO userDTO = userService.getUserDetails(userid);
+
+        return new ResponseEntity<>(userDTO, HttpStatus.OK);
     }
 
-    @PostMapping("/login")
-    public String login(@RequestBody UserDTO userDTO) {
-        return userService.login(userDTO);
+    @PostMapping("{id}/roles")
+    public ResponseEntity<UserDTO> setUserRoles(@PathVariable("id") Long userId, @RequestBody SetUserRolesRequestDTO request) {
+        UserDTO userDTO = userService.setUserRoles(userId, request.getRoleIds());
+
+        return new ResponseEntity<>(userDTO, HttpStatus.OK);
+
     }
 
-    @PostMapping("/logout")
-    public void logout(@RequestBody UserDTO userDTO) {
-        userService.logout(userDTO);
-    }
+
 }
