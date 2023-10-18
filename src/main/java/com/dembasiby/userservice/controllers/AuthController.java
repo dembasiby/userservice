@@ -1,6 +1,7 @@
 package com.dembasiby.userservice.controllers;
 
 import com.dembasiby.userservice.dtos.LoginRequestDTO;
+import com.dembasiby.userservice.dtos.LogouRequestDTO;
 import com.dembasiby.userservice.dtos.SignUpRequestDTO;
 import com.dembasiby.userservice.dtos.UserDTO;
 import com.dembasiby.userservice.services.AuthService;
@@ -19,6 +20,11 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<UserDTO> login(@RequestBody LoginRequestDTO request) {
         return authService.login(request.getEmail(), request.getPassword());
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<Void> logout(@RequestBody LogouRequestDTO request) {
+        return authService.logout(request.getToken(), request.getUserId());
     }
 
     @PostMapping("/signup")
