@@ -70,4 +70,12 @@ public class AuthService {
 
         return ResponseEntity.ok().build();
     }
+
+    public SessionStatus validate(String token, Long userId) {
+        Optional<Session> optionalSession = sessionRepository.findByTokenAndUser_Id(token, userId);
+
+        if (optionalSession.isEmpty()) return null;
+
+        return SessionStatus.ACTIVE;
+    }
 }

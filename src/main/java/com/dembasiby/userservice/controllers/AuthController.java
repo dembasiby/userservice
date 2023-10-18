@@ -1,9 +1,7 @@
 package com.dembasiby.userservice.controllers;
 
-import com.dembasiby.userservice.dtos.LoginRequestDTO;
-import com.dembasiby.userservice.dtos.LogouRequestDTO;
-import com.dembasiby.userservice.dtos.SignUpRequestDTO;
-import com.dembasiby.userservice.dtos.UserDTO;
+import com.dembasiby.userservice.dtos.*;
+import com.dembasiby.userservice.models.SessionStatus;
 import com.dembasiby.userservice.services.AuthService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -31,5 +29,12 @@ public class AuthController {
     public ResponseEntity<UserDTO> login(@RequestBody SignUpRequestDTO request) {
         UserDTO userDTO = authService.signUp(request.getEmail(), request.getPassword());
         return new ResponseEntity<>(userDTO, HttpStatus.OK);
+    }
+
+    @PostMapping("/validate")
+    public ResponseEntity<SessionStatus> validateToken(ValidateTokenRequestDTO request) {
+        SessionStatus sessionStatus = authService.validate(request.getToken(), request.getUserId());
+
+        return new ResponseEntity<>(sessionStatus, HttpStatus.OK);
     }
 }
