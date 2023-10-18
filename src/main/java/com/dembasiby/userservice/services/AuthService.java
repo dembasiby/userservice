@@ -1,17 +1,31 @@
 package com.dembasiby.userservice.services;
 
 import com.dembasiby.userservice.dtos.UserDTO;
+import com.dembasiby.userservice.models.SessionStatus;
 import com.dembasiby.userservice.models.User;
+import com.dembasiby.userservice.models.Session;
+import com.dembasiby.userservice.repositories.SessionRepository;
 import com.dembasiby.userservice.repositories.UserRepository;
+import org.apache.commons.lang3.RandomStringUtils;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.util.MultiValueMapAdapter;
+
+import java.util.HashMap;
+import java.util.Optional;
 
 @Service
 public class AuthService {
 
     private final UserRepository userRepository;
+    private final SessionRepository sessionRepository;
 
-    public AuthService(UserRepository userRepository) {
+    public AuthService(UserRepository userRepository,
+                       SessionRepository sessionRepository) {
         this.userRepository = userRepository;
+        this.sessionRepository = sessionRepository;
     }
 
     public UserDTO signUp(String email, String password) {
@@ -21,5 +35,27 @@ public class AuthService {
         User savedUser = userRepository.save(user);
 
         return UserDTO.from(savedUser);
+    }
+
+    public ResponseEntity<UserDTO> login(String email, String password) {
+        Optional<User> optionalUser = userRepository.findByEmail(email);
+
+        if (optionalUser.isEmpty()) return null;
+        User user = optionalUser.get();
+
+        if (!user.getPassword().equals(password)) return null;
+
+        String token = RandomStringUtils.randomAlphanumeric(30);
+
+        Session session = new Session();
+        session.setSessionStatus(SessionStatus.ACTIVE);
+        session.setToken(token);
+        session.setUser(user);
+        sessionRepository.save(session);
+
+        MultiValueMapAdapter<String, String> headers = new MultiValueMapAdapter<>(new HashMap<>());
+        headers.add(HttpHeaders.SET_COOKIE, "auth-token:" + token);
+
+        return new ResponseEntity<>(UserDTO.from(user), headers, HttpStatus.OK);
     }
 }
