@@ -47,7 +47,8 @@ public class AuthService {
         if (optionalUser.isEmpty()) return null;
         User user = optionalUser.get();
 
-        if (!user.getPassword().equals(password)) return null;
+        if (!bCryptPasswordEncoder.matches(password, user.getPassword()))
+            throw new RuntimeException("Wrong username and/or password");
 
         String token = RandomStringUtils.randomAlphanumeric(30);
 
